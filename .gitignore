@@ -2,3 +2,4 @@
 /env/
 /migrations/
 app/db.sqlite3
+.vscode/launch.json
