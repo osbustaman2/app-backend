@@ -1,6 +1,7 @@
 /__pycache__/
 __pycache__
 /env/
+venv
 /migrations/
 app/db.sqlite3
 .vscode/launch.json
