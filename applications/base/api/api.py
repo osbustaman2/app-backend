@@ -9,7 +9,6 @@ from app.functions import load_one_database
 from applications.base.api.serializer import AddClienteSerializers, ClienteSerializers, UserSerializer
 
 from applications.base.models import Cliente
-from applications.base.views import connection_mongo
 
 class ClienteCreateAPIView(generics.CreateAPIView):
     # From here a marcas is created 
@@ -21,7 +20,6 @@ class ClienteCreateAPIView(generics.CreateAPIView):
             serializer.save()
 
             # serializer.data['nombre_bd']
-            connection_mongo(serializer)
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

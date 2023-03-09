@@ -1,7 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
-from djongo import models
 from model_utils.models import TimeStampedModel
 
 from django.conf import settings

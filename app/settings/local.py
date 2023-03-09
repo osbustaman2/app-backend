@@ -15,12 +15,12 @@ NAME_HOST = 'rasuz.algo'
 DATABASES = {
     'default': {
         'ENGINE': config('ENGINE'),
-        'NAME': config('DB_NAME'),
-        'ENFORCE_SCHEMA': False,
-        'CLIENT': {
-            'host': config('HOST')
-        } 
-    }
+        'NAME': config('NAME'),
+        'USER': config('USER'),
+        'PASSWORD': config('PASSWORD'),
+        'HOST': config('HOST'),
+        'PORT': config('PORT'),
+    },
 }
 
 STATIC_URL = '/static/'
