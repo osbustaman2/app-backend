@@ -9,17 +9,32 @@ from app.functions import load_one_database
 from applications.base.api.serializer import AddClienteSerializers, ClienteSerializers, UserSerializer
 
 from applications.base.models import Cliente
+from applications.base.utils import crearMigrate, create_database, getCliente, validarRut
 
 class ClienteCreateAPIView(generics.CreateAPIView):
-    # From here a marcas is created 
     serializer_class = AddClienteSerializers
 
     def post(self, request, format=None):
         serializer = AddClienteSerializers(data=request.data)
         if serializer.is_valid():
+            if not validarRut(request.data['rut_cliente']):
+                return Response({
+                        "error": "El rut es invalido"
+                    }, 
+                    status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+            if getCliente(request.data):
+                return Response({
+                        "error": "el cliente ya existe"
+                    }, 
+                    status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+            ## Guarda los datos del cliente
             serializer.save()
 
-            # serializer.data['nombre_bd']
+            # Crea la base de datos y su migración
+            create_database(request.data)
+            crearMigrate(request.data)
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

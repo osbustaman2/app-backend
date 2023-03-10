@@ -34,9 +34,6 @@ class Cliente(TimeStampedModel):
     def __create_url_client(self):
         return f"http://{self.nombre_bd}.{NAME_HOST}:{PORT_LOCALHOST}"
 
-    # def __create_url_client(self):
-    #     return ""
-
     create_url_client = property(__create_url_client)
 
     def save(self, *args, **kwargs):
