@@ -46,7 +46,8 @@ THIRD_PARTY_APPS = [
     #'dj_rest_auth'
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-    'corsheaders'
+    'corsheaders',
+    'djongo',
 ]
 
 LOCAL_APPS = [
