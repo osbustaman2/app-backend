@@ -3,6 +3,9 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from applications.base.models import Cliente
 
+from rest_framework import serializers
+from django.contrib.auth.hashers import make_password   
+
 
 class AddClienteSerializers(serializers.ModelSerializer):
     class Meta:
@@ -22,14 +25,19 @@ class ClienteSerializers(serializers.ModelSerializer):
         fields = ('__all__')
 
 
-class UserSerializer(serializers.Serializer):
-    idCliente = serializers.IntegerField()
-    username = serializers.CharField()
-    first_name = serializers.CharField()
-    last_name = serializers.CharField()
-    email = serializers.CharField()
-    password = serializers.CharField()
-    # class Meta:
-    #     model = User
-    #     fields = ('idCliente', 'username', 'email', 'password')
-        # extra_kwargs = {'password': {'write_only': True}}
+class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(
+        write_only=True, required=True, style={'input_type': 'password'}
+    )
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'password', 'first_name', 'last_name']
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
+
+    def create(self, validated_data):
+        # Hashea la contraseña antes de crear el usuario
+        validated_data['password'] = make_password(validated_data['password'])
+        return super().create(validated_data)

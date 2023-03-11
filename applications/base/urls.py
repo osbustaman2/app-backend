@@ -1,11 +1,11 @@
 from django.urls import path
 from applications.base.api.api import (
+    AdminUserCreateAPIView,
     ClienteCreateAPIView, 
-    ClientesListApiView, 
-    UsuarioCreateAPIView, 
+    ClientesListApiView,  
     ClienteRetriveUpdateView,
     ClienteDeleteView,
-    ClientesDetailApiView
+    ClientesDetailApiView,
 )
 
 app_name = 'base_app'
@@ -19,5 +19,6 @@ urlpatterns = [
     path('api/get/all/clientes/', ClientesListApiView.as_view(), name='get-all-clientes'),   
 
     
-    path('api/register/admin/', UsuarioCreateAPIView.as_view(), name='register-admin'),                                  
+    path('add/user/admin/<int:client_id>/', AdminUserCreateAPIView.as_view(), name='add_admin_user'),
+                                
 ]

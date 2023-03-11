@@ -1,12 +1,18 @@
+import psycopg2
+
 from django.contrib.auth.models import User
 
-from rest_framework import generics
+from decouple import config
 
-from rest_framework import status
+from rest_framework import generics, status
 from rest_framework.response import Response
 
 from app.functions import load_one_database
-from applications.base.api.serializer import AddClienteSerializers, ClienteSerializers, UserSerializer
+from applications.base.api.serializer import (
+      AddClienteSerializers
+    , ClienteSerializers
+    , UserSerializer
+)
 
 from applications.base.models import Cliente
 from applications.base.utils import crearMigrate, create_database, getCliente, validarRut
@@ -55,7 +61,6 @@ class ClientesDetailApiView(generics.ListAPIView):
         object_marca = Cliente.objects.filter(id=self.kwargs['pk'])
         return object_marca
     
-
 class ClienteRetriveUpdateView(generics.UpdateAPIView):
     # From here a tipo_producto is update 
     serializer_class = ClienteSerializers
@@ -78,10 +83,31 @@ class ClienteDeleteView(generics.DestroyAPIView):
     serializer_class = ClienteSerializers
     queryset = Cliente.objects.all()
 
+class AdminUserCreateAPIView(generics.CreateAPIView):
+    serializer_class = UserSerializer
 
+    def post(self, request, client_id):
+        client = Cliente.objects.get(id=client_id)
+        database_name = client.nombre_bd
 
+        # Configura la conexión de la base de datos del cliente
+        client_db = psycopg2.connect(database=database_name, user=config('USER'), password=config('PASSWORD'),
+                                     host=config('HOST'), port=config('PORT'))
 
+        # Crea el usuario administrador en la base de datos del cliente
+        user_serializer = self.get_serializer(data=request.data)
+        user_serializer.is_valid(raise_exception=True)
+        user = user_serializer.save()
+        User.objects.using(database_name).create_superuser(
+            id=user.id
+            , username=user.username
+            , email=user.email
+            , password=user.password
+            , first_name=user.first_name
+            , last_name=user.last_name
+        )
 
+        return Response({'success': True}, status=status.HTTP_201_CREATED)
 
 
 
@@ -97,56 +123,33 @@ class ClienteDeleteView(generics.DestroyAPIView):
 
 
     
-class UsuarioCreateAPIView(generics.CreateAPIView):
-    serializer_class = UserSerializer
+# class UsuarioCreateAPIView(generics.CreateAPIView):
+#     serializer_class = UserSerializer
 
-    def post(self, request, format=None):
-        serializer = UserSerializer(data=request.data)
+#     def post(self, request, format=None):
+#         serializer = UserSerializer(data=request.data)
 
-        try:
-            id_objeto = request.data['idCliente']
-            registros = Cliente.objects.filter(id=id_objeto)
+#         try:
+#             id_objeto = request.data['idCliente']
+#             registros = Cliente.objects.filter(id=id_objeto)
 
-            form = User()
-            form.username = request.data['username']
-            form.first_name = request.data['first_name']
-            form.last_name = request.data['last_name']
-            form.email = request.data['email']
-            form.set_password(request.data['password'])
-            form.is_staff = True
-            form.is_superuser = True
+#             form = User()
+#             form.username = request.data['username']
+#             form.first_name = request.data['first_name']
+#             form.last_name = request.data['last_name']
+#             form.email = request.data['email']
+#             form.set_password(request.data['password'])
+#             form.is_staff = True
+#             form.is_superuser = True
 
-            load_one_database(registros)
-            form.save(using=registros[0].nombre_bd)
+#             load_one_database(registros)
+#             form.save(using=registros[0].nombre_bd)
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        except Exception as err:
-            pass
-
-
-
-        # if serializer.is_valid():
-
-        #     id_objeto = request.data['idCliente']
-        #     registros = Cliente.objects.filter(id=id_objeto)
-
-        #     serializer.save(using=registros[0].nombre_cliente)
-        #     return Response(serializer.data, status=status.HTTP_201_CREATED)
-        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         except Exception as err:
+#             pass
 
 
 
-"""try:
-        cActivo = ClienteActivo.objects.using(la_base.cli_conexion).get(cac_id=la_base.cli_idclienteactivo)
-        cActivo.cac_activo = la_base.cli_activa
-    except:
-        cActivo = ClienteActivo()
-        cActivo.cac_rutabase = ''
-        cActivo.cac_rutadocumentos = ''
-        cActivo.cac_rutadstatic = ''
-        cActivo.cac_rutausuarios = ''
-        cActivo.cac_nombrebase = la_base.cli_conexion
-        cActivo.cac_nombreimagenlogo = ''
 
-    cActivo.save(using=la_base.cli_name)"""
             
