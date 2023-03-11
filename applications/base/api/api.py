@@ -6,8 +6,6 @@ from decouple import config
 
 from rest_framework import generics, status
 from rest_framework.response import Response
-
-from app.functions import load_one_database
 from applications.base.api.serializer import (
       AddClienteSerializers
     , ClienteSerializers
@@ -94,22 +92,6 @@ class AdminUserCreateAPIView(generics.CreateAPIView):
         client = Cliente.objects.get(id=pk)
         database_name = client.nombre_bd
 
-        # Configura la conexión de la base de datos del cliente
-        client_db = psycopg2.connect(database=database_name, user=config('USER'), password=config('PASSWORD'),
-                                     host=config('HOST'), port=config('PORT'))
-
-        # Crea el usuario administrador en la base de datos del cliente
-        # user_serializer = self.get_serializer(data=request.data)
-        # user_serializer.is_valid(raise_exception=True)
-        # user = user_serializer.save()
-        # User.objects.using(database_name).create_superuser(
-        #     username=request.data['username']
-        #     , email=request.data['email']
-        #     , password=request.data['password']
-        #     , first_name=request.data['first_name']
-        #     , last_name=request.data['last_name']
-        # )
-
         form = User()
 
         form.username = request.data['username']
@@ -136,32 +118,7 @@ class AdminUserCreateAPIView(generics.CreateAPIView):
 
 
 
-    
-# class UsuarioCreateAPIView(generics.CreateAPIView):
-#     serializer_class = UserSerializer
 
-#     def post(self, request, format=None):
-#         serializer = UserSerializer(data=request.data)
-
-#         try:
-#             id_objeto = request.data['idCliente']
-#             registros = Cliente.objects.filter(id=id_objeto)
-
-#             form = User()
-#             form.username = request.data['username']
-#             form.first_name = request.data['first_name']
-#             form.last_name = request.data['last_name']
-#             form.email = request.data['email']
-#             form.set_password(request.data['password'])
-#             form.is_staff = True
-#             form.is_superuser = True
-
-#             load_one_database(registros)
-#             form.save(using=registros[0].nombre_bd)
-
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         except Exception as err:
-#             pass
 
 
 

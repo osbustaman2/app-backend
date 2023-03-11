@@ -20,7 +20,7 @@ DATABASES = {
         'PASSWORD': config('PASSWORD'),
         'HOST': config('HOST'),
         'PORT': config('PORT'),
-    },
+    }
 }
 
 STATIC_URL = '/static/'
