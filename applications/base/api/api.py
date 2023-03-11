@@ -90,8 +90,8 @@ class ClienteDeleteView(generics.DestroyAPIView):
 class AdminUserCreateAPIView(generics.CreateAPIView):
     serializer_class = UserSerializer
 
-    def post(self, request, client_id):
-        client = Cliente.objects.get(id=client_id)
+    def post(self, request, pk):
+        client = Cliente.objects.get(id=pk)
         database_name = client.nombre_bd
 
         # Configura la conexión de la base de datos del cliente
@@ -99,17 +99,27 @@ class AdminUserCreateAPIView(generics.CreateAPIView):
                                      host=config('HOST'), port=config('PORT'))
 
         # Crea el usuario administrador en la base de datos del cliente
-        user_serializer = self.get_serializer(data=request.data)
-        user_serializer.is_valid(raise_exception=True)
-        user = user_serializer.save()
-        User.objects.using(database_name).create_superuser(
-            id=user.id
-            , username=user.username
-            , email=user.email
-            , password=user.password
-            , first_name=user.first_name
-            , last_name=user.last_name
-        )
+        # user_serializer = self.get_serializer(data=request.data)
+        # user_serializer.is_valid(raise_exception=True)
+        # user = user_serializer.save()
+        # User.objects.using(database_name).create_superuser(
+        #     username=request.data['username']
+        #     , email=request.data['email']
+        #     , password=request.data['password']
+        #     , first_name=request.data['first_name']
+        #     , last_name=request.data['last_name']
+        # )
+
+        form = User()
+
+        form.username = request.data['username']
+        form.first_name = request.data['first_name']
+        form.last_name = request.data['last_name']
+        form.email = request.data['email']
+        form.set_password(request.data['password'])
+        form.is_staff = True
+        form.is_superuser = True
+        form.save(using=database_name)
 
         return Response({'success': True}, status=status.HTTP_201_CREATED)
 

@@ -19,6 +19,6 @@ urlpatterns = [
     path('api/get/all/clientes/', ClientesListApiView.as_view(), name='get-all-clientes'),   
 
     
-    path('add/user/admin/<int:client_id>/', AdminUserCreateAPIView.as_view(), name='add_admin_user'),
+    path('add/user/admin/<pk>/', AdminUserCreateAPIView.as_view(), name='add_admin_user'),
                                 
 ]
