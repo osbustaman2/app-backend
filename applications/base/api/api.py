@@ -42,7 +42,11 @@ class ClienteCreateAPIView(generics.CreateAPIView):
             create_database(request.data)
             crearMigrate(request.data)
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            response_to_page = {
+                "data_serializer": serializer.data
+            }
+
+            return Response(response_to_page, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class ClientesListApiView(generics.ListAPIView):

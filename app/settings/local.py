@@ -7,7 +7,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 PORT_LOCALHOST = '8080'
-NAME_HOST = 'rasuz.algo'
+NAME_HOST = 'horus.desarollo'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
